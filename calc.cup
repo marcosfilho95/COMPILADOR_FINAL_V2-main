@@ -1,0 +1,159 @@
+import java_cup.runtime.*;
+import java.io.*;
+import java.util.*;
+
+// Código do parser
+parser code {:
+    scanner s;
+    Map<String, Integer> symbolTable = new HashMap<>();  // Tabela de símbolos para variáveis
+
+    parser(scanner s) {
+        this.s = s;
+    }
+
+    // Classes para construção da árvore sintática
+    abstract class ASTNode {
+        abstract void print(String prefix);
+    }
+
+    class ASTBinaryNode extends ASTNode {
+        String operator;
+        ASTNode left, right;
+
+        ASTBinaryNode(String operator, ASTNode left, ASTNode right) {
+            this.operator = operator;
+            this.left = left;
+            this.right = right;
+        }
+
+        @Override
+        void print(String prefix) {
+            System.out.println(prefix + operator);
+            if (left != null) left.print(prefix + "  ");
+            if (right != null) right.print(prefix + "  ");
+        }
+    }
+
+    class ASTNumberNode extends ASTNode {
+        int value;
+
+        ASTNumberNode(int value) {
+            this.value = value;
+        }
+
+        @Override
+        void print(String prefix) {
+            System.out.println(prefix + value);
+        }
+    }
+
+    class ASTIdentifierNode extends ASTNode {
+        String name;
+
+        ASTIdentifierNode(String name) {
+            this.name = name;
+        }
+
+        @Override
+        void print(String prefix) {
+            System.out.println(prefix + name);
+        }
+    }
+
+    class ASTKeywordNode extends ASTNode {
+        String keyword;
+
+        ASTKeywordNode(String keyword) {
+            this.keyword = keyword;
+        }
+
+        @Override
+        void print(String prefix) {
+            System.out.println(prefix + keyword);
+        }
+    }
+:}
+
+// Definição do scanner
+scan with {: return s.next_token(); :};
+
+// Terminais
+terminal SEMI, PLUS, MINUS, TIMES, LPAREN, RPAREN, EQUALS;
+terminal IF, ELSE, WHILE, RETURN;  // Keywords
+terminal GT, LT, GE, LE, EQ, NE;   // Operadores de comparação
+terminal UMINUS;
+terminal Integer NUMBER;
+terminal String IDENTIFIER;
+
+// Não terminais
+non terminal expr_list;
+non terminal ASTNode expr;
+
+// Precedência
+precedence left PLUS, MINUS;  // Menor precedência
+precedence left TIMES;        // Maior precedência
+precedence left GT, LT, GE, LE, EQ, NE;  // Operadores de comparação
+precedence left UMINUS;       // Para unários negativos
+
+// Lista de expressões
+expr_list ::= expr_list expr:e SEMI  {: 
+                                          System.out.println("Árvore sintática da expressão:");
+                                          e.print("");
+                                          RESULT = null; 
+                                      :}
+           | expr:e SEMI            {: 
+                                          System.out.println("Árvore sintática da expressão:");
+                                          e.print("");
+                                          RESULT = null; 
+                                      :};
+
+// Regras para expressões
+expr ::= expr:e1 PLUS expr:e2 
+          {: RESULT = new ASTBinaryNode("+", e1, e2); :}
+       | expr:e1 MINUS expr:e2 
+          {: RESULT = new ASTBinaryNode("-", e1, e2); :}
+       | expr:e1 TIMES expr:e2 
+          {: RESULT = new ASTBinaryNode("*", e1, e2); :}
+       | expr:e1 GT expr:e2
+          {: RESULT = new ASTBinaryNode(">", e1, e2); :}
+       | expr:e1 LT expr:e2
+          {: RESULT = new ASTBinaryNode("<", e1, e2); :}
+       | expr:e1 GE expr:e2
+          {: RESULT = new ASTBinaryNode(">=", e1, e2); :}
+       | expr:e1 LE expr:e2
+          {: RESULT = new ASTBinaryNode("<=", e1, e2); :}
+       | expr:e1 EQ expr:e2
+          {: RESULT = new ASTBinaryNode("==", e1, e2); :}
+       | expr:e1 NE expr:e2
+          {: RESULT = new ASTBinaryNode("!=", e1, e2); :}
+       | MINUS expr:e                 
+          {: RESULT = new ASTBinaryNode("-", new ASTNumberNode(0), e); :} %prec UMINUS
+       | LPAREN expr:e RPAREN         
+          {: RESULT = e; :}
+       | NUMBER:n                     
+          {: RESULT = new ASTNumberNode(n); :}
+       | IDENTIFIER:id                
+          {:
+            if (!symbolTable.containsKey(id)) {
+                System.out.println("Variável '" + id + "' não estava definida. Inicializando com valor 0.");
+                symbolTable.put(id, 0);  // Adiciona a variável à tabela de símbolos com valor padrão
+            }
+            RESULT = new ASTIdentifierNode(id);
+          :}
+
+       | IDENTIFIER:id EQUALS expr:e  
+          {: 
+              symbolTable.put(id, 0);  // Adiciona variável na tabela de símbolos
+              RESULT = new ASTBinaryNode("=", new ASTIdentifierNode(id), e); 
+          :}
+       | IF LPAREN expr:e RPAREN expr:e1 ELSE expr:e2 
+          {: RESULT = new ASTBinaryNode("if", e, new ASTBinaryNode("else", e1, e2)); :}
+       | WHILE LPAREN expr:e RPAREN expr:e1
+          {: RESULT = new ASTBinaryNode("while", e, e1); :}
+       | RETURN expr:e
+          {: RESULT = new ASTBinaryNode("return", e, null); :}
+       | error                         
+          {: 
+              System.err.println("Erro de sintaxe na expressão.");
+              RESULT = null; 
+          :};
