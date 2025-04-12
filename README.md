@@ -4,6 +4,11 @@
 
 Este é um projeto acadêmico desenvolvido como parte da disciplina de **Aspectos Teóricos da Computação**. O objetivo principal do trabalho é construir um compilador básico, composto pelas etapas de análise léxica e análise sintática, utilizando as ferramentas **JFlex** e **JCup**.
 
+## Autores
+
+- **Dalton Linconl** - Matrícula: 2225913  
+- **Marcos Antônio Félix** - Matrícula: 1810440
+
 ### Estrutura do Projeto
 
 O compilador foi dividido em três etapas principais:
@@ -21,13 +26,6 @@ O compilador foi dividido em três etapas principais:
 - **JavaCup**: Ferramenta para geração de analisadores sintáticos (parser).  
   - Disponível em: [JavaCup GitHub](http://www2.cs.tum.edu/projects/cup/).
 - Configuração do ambiente para execução de arquivos `.bat`.
-
----
-
-## Autores
-
-- **Dalton Linconl** - Matrícula: 2225913  
-- **Marcos Antônio Félix** - Matrícula: 1810440  
 
 ---
 
