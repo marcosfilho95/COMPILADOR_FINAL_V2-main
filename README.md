@@ -2,8 +2,8 @@
 
 ## Autores
 
-- **Dalton Linconl** - Matrícula: 2225913  
 - **Marcos Antônio Félix** - Matrícula: 1810440
+- **Dalton Linconl** - Matrícula: 2225913  
 
 ## Descrição do Projeto
 
