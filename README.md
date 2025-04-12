@@ -1,13 +1,13 @@
 # Compilador - Trabalho de Aspectos Teóricos da Computação
 
-## Descrição do Projeto
-
-Este é um projeto acadêmico desenvolvido como parte da disciplina de **Aspectos Teóricos da Computação**. O objetivo principal do trabalho é construir um compilador básico, composto pelas etapas de análise léxica e análise sintática, utilizando as ferramentas **JFlex** e **JCup**.
-
 ## Autores
 
 - **Dalton Linconl** - Matrícula: 2225913  
 - **Marcos Antônio Félix** - Matrícula: 1810440
+
+## Descrição do Projeto
+
+Este é um projeto acadêmico desenvolvido como parte da disciplina de **Aspectos Teóricos da Computação**. O objetivo principal do trabalho é construir um compilador básico, composto pelas etapas de análise léxica e análise sintática, utilizando as ferramentas **JFlex** e **JCup**.
 
 ### Estrutura do Projeto
 
